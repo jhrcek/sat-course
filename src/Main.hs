@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -Wall #-}
 
 module Main where
 
@@ -10,15 +11,14 @@ import System.Process (readProcess)
 
 main :: IO ()
 main = do
-
-    let script = show (pp eightQueensScript)
+    let script = show (pp $ nQueensScript 4)
                 -- hack, because SMTLib2 doesn't seem to support get-model command
                 ++ "\n(get-model)"
     writeFile "queens" script
     putStrLn =<< readProcess "z3" ["-smt2", "queens"] []
 
-eightQueensScript :: Script
-eightQueensScript = Script
+nQueensScript :: Integer -> Script
+nQueensScript n = Script
     [ CmdDeclareFun "p" [tInt, tInt] tBool
     , CmdAssert $ app "and" $
         atLeastOneInEachRow <>
@@ -30,17 +30,17 @@ eightQueensScript = Script
     ]
   where
     p i j = app "p" [Lit (LitNum i) , Lit (LitNum j)]
-    indices = [1..8]
+    indices = [1..n]
     atLeastOneInRow r = app "or" [ p r c | c <- indices ]
     atLeastOneInEachRow = [ atLeastOneInRow r | r <- indices ]
 
     atLeastOneInColumn c = app "or" [ p r c | r <- indices ]
     atLeastOneInEachColumn = [ atLeastOneInColumn c | c <- indices ]
 
-    atMostOneInRow r = [ not (p r j) `or` not (p r k) | j <- indices, k <- [j+1..8] ]
+    atMostOneInRow r = [ not (p r j) `or` not (p r k) | j <- indices, k <- [j+1..n] ]
     atMostOneInEachRow = concat [atMostOneInRow r | r <- indices]
 
-    atMostOneInColumn c = [ not (p j c) `or` not (p k c) | j <- indices, k <- [j+1..8] ]
+    atMostOneInColumn c = [ not (p j c) `or` not (p k c) | j <- indices, k <- [j+1..n] ]
     atMostOneInEachColumn = concat [atMostOneInColumn c | c <- indices]
 
     atMostOneInEachDiagonal = [ not (p i j) `or` not (p i' j')
