@@ -4,9 +4,10 @@
 module Main where
 
 import Prelude hiding (and, not, or)
-import SMTLib2
-import SMTLib2.Core
-import SMTLib2.Int
+import SMTLib2 (Command (CmdAssert, CmdCheckSat, CmdDeclareFun), Expr (Lit),
+                Literal (LitNum), Script (Script), app, pp)
+import SMTLib2.Core (not, or, tBool)
+import SMTLib2.Int (tInt)
 import System.Process (readProcess)
 
 main :: IO ()
