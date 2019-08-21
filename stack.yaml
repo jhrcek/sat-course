@@ -1,0 +1,5 @@
+resolver: lts-14.1
+packages:
+- .
+extra-deps:
+- smtLib-1.1@sha256:6e80aa14ae39adb238a12ec404c3034a8d54a8e6d1656075383fff5e6854b224,850
